@@ -13,7 +13,8 @@ export const ProductProvider = ({ children }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("https://orangebook-strapibackend-superbase.onrender.com/api/books"); // Update with your API endpoint
+        const res = await axios.get("http://localhost:1337/api/books"); // Update with your API endpoint
+        // const res = await axios.get("https://orangebook-strapibackend-superbase.onrender.com/api/books"); // Update with your API endpoint
         setProducts(res.data.data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -23,7 +24,7 @@ export const ProductProvider = ({ children }) => {
     };
 
     fetchProducts();
-  }, [products]);
+  }, []);
 
   return (
     <ProductContext.Provider value={{ products, loading }}>

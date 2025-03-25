@@ -1,4 +1,3 @@
-// context/UserContext.js
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
@@ -22,15 +21,19 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
-  const register = async (email, password, username) => {
+  const register = async (email, password, username, firstname, lastname, phone, address) => {
     try {
-      const response = await axios.post(
-       'https://orangebook-strapibackend-superbase.onrender.com/api/auth/local/register',
-        {
-          email,
-          password,
-          username,
-        }
+
+      const payload = { email, password, username };
+      if (firstname) payload.firstname = firstname;
+      if (lastname) payload.lastname = lastname;
+      if (phone) payload.phone = phone;
+      if (address) payload.address = address;
+
+        const response = await axios.post(
+        // "https://orangebook-strapibackend-superbase.onrender.com/api/auth/local/register",
+        "http://localhost:1337/api/auth/local/register",
+        payload
       );
 
       const { jwt, user } = response.data;
@@ -54,8 +57,41 @@ export const UserProvider = ({ children }) => {
     router.push("/page/login");
   };
 
+
+  const loginUser = async (identifier, password) => {
+    try {
+      const response = await axios.post("http://localhost:1337/api/auth/local", {
+        identifier, // Can be an email or username
+        password,
+      });
+      const { jwt, user } = response.data;
+      setToken(jwt);
+      setUser(user);
+      localStorage.setItem("token", jwt);
+      localStorage.setItem("user", JSON.stringify(user));
+    } catch (error) {
+      console.error("Login error:", error.response?.data?.error?.message || error.message);
+      return null;
+    }
+  };
+
+   const getUser = () => {
+    if (typeof window !== "undefined") {
+      const user = localStorage.getItem("user");
+      return user ? JSON.parse(user) : null;
+    }
+    return null;
+  };
+
+  const getToken = () => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("token");
+    }
+    return null;
+  };
+
   return (
-    <UserContext.Provider value={{ user, token, register, logout }}>
+    <UserContext.Provider value={{ user, token, register, logout, loginUser }}>
       {children}
     </UserContext.Provider>
   );

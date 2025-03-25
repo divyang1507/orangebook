@@ -122,7 +122,9 @@
   }
 }
 
-
+body{
+  overflow-x: hidden;
+}
 
 
 .swiper {
